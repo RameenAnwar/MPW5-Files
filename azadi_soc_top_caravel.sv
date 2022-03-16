@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2020 MERL
+// SPDX-FileCopyrightText: 2020 Efabless Corporation
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,8 @@
 `define MPRJ_IO_PADS 38
 module azadi_soc_top_caravel (
   `ifdef USE_POWER_PINS
-      inout vdda1,	// User area 1 3.3V supply
-      inout vdda2,	// User area 2 3.3V supply
-      inout vssa1,	// User area 1 analog ground
-      inout vssa2,	// User area 2 analog ground
       inout vccd1,	// User area 1 1.8V supply
-      inout vccd2,	// User area 2 1.8v supply
       inout vssd1,	// User area 1 digital ground
-      inout vssd2,	// User area 2 digital ground
   `endif
 
     // Wishbone Slave ports (WB MI A)
@@ -48,21 +42,12 @@ module azadi_soc_top_caravel (
     input  [127:0] la_oenb,
 
     // IOs, MPRJ_IO_PADS = 38
-    input  [`MPRJ_IO_PADS-2:0] io_in,  
-    output [`MPRJ_IO_PADS-2:0] io_out,
-    output [`MPRJ_IO_PADS-2:0] io_oeb,
-
-    // Analog (direct connection to GPIO pad---use with caution)
-    // Note that analog I/O is not available on the 7 lowest-numbered
-    // GPIO pads, and so the analog_io indexing is offset from the
-    // GPIO indexing by 7 (also upper 2 GPIOs do not have analog_io).
-    inout [`MPRJ_IO_PADS-11:0] analog_io,
-
-    // Independent clock (on independent integer divider)
-    input   user_clock2,
+    input  [`MPRJ_IO_PADS-1:0] io_in,  
+    output [`MPRJ_IO_PADS-1:0] io_out,
+    output [`MPRJ_IO_PADS-1:0] io_oeb,
 
     // User maskable interrupt signals
-    output [2:0] user_irq
+    output [2:0] irq
 );
 
   wire clk_i;  
@@ -180,9 +165,9 @@ module azadi_soc_top_caravel (
   assign gpio_i[26]     =  io_in[34];
 
   // GPIO 27-29
-  assign io_oeb[36:35]  = ~gpio_oe[28:27];
-  assign gpio_i[28:27]  =  io_in  [36:35];
-  assign io_out[36:35]  =  gpio_o [28:27];
+  assign io_oeb[37:35]  = ~gpio_oe[29:27];
+  assign gpio_i[29:27]  =  io_in  [37:35];
+  assign io_out[37:35]  =  gpio_o [29:27];
 
   // Logic Analyzer ports
   assign clks_per_bit  = la_data_in[15:0];
@@ -231,3 +216,4 @@ module azadi_soc_top_caravel (
   );
 
 endmodule
+
